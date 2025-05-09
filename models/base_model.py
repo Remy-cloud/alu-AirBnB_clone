@@ -41,6 +41,7 @@ class BaseModel:
         Update the 'updated_at' attribute with the current time.
         """
         self.updated_at = datetime.now()
+        print("ok")
 
     def to_dict(self):
         """
