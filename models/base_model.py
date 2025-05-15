@@ -3,6 +3,7 @@
 
 import uuid
 from datetime import datetime
+from models import storage  #Import storage instance
 
 
 class BaseModel:
@@ -15,7 +16,8 @@ class BaseModel:
         Initialize a new BaseModel instance.
 
         If kwargs is provided, it recreates an instance from a dictionary.
-        Otherwise, it creates a new instance with a unique ID and timestamps.
+        Otherwise, it creates a new instance with a unique ID and timestamps,
+        and stores it in the storage engine.
         """
         if kwargs:
             for key, value in kwargs.items():
@@ -28,6 +30,7 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = self.created_at
+            storage.new(self)  #Register new object in storage
 
     def __str__(self):
         """
@@ -38,10 +41,11 @@ class BaseModel:
 
     def save(self):
         """
-        Update the 'updated_at' attribute with the current time.
+        Update the 'updated_at' attribute with the current time
+        and save the instance to the storage engine.
         """
         self.updated_at = datetime.now()
-        return "OK"
+        storage.save()  #Persist storage to file
 
     def to_dict(self):
         """
