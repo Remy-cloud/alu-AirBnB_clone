@@ -45,6 +45,7 @@ class BaseModel:
         and save the instance to the storage engine.
         """
         self.updated_at = datetime.now()
+        from models import storage
         storage.save()  #Persist storage to file
 
     def to_dict(self):
