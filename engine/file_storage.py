@@ -2,8 +2,7 @@
 """FileStorage module: serializes and deserializes BaseModel instances to/from JSON file"""
 
 import json
-from models.base_model import BaseModel
-
+import os
 
 class FileStorage:
     """Handles serialization and deserialization of BaseModel instances"""
@@ -28,6 +27,7 @@ class FileStorage:
 
     def reload(self):
         """Deserializes the JSON file back to __objects"""
+        from models.base_model import BaseModel
         try:
             with open(self.__file_path, "r") as f:
                 obj_dict = json.load(f)
