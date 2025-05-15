@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """FileStorage module: serializes and deserializes BaseModel instances to/from JSON file"""
-
+"""
 import json
 import os
 
@@ -37,3 +37,4 @@ class FileStorage:
                         self.__objects[key] = BaseModel(**val)
         except FileNotFoundError:
             pass
+"""
