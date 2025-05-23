@@ -16,7 +16,7 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 
-# Dictionary to map model names to actual classes
+"""Dictionary to map model names to actual classes"""
 MODELS = {
     "BaseModel": BaseModel,
     "User": User,
