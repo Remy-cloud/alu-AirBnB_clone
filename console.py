@@ -27,7 +27,7 @@ MODELS = {
 
 def validate_args(args_list):
     """
-    Validates command arguments to ensure they meet 
+    Validates command arguments to ensure they me
     requirements.
     """
     if not args_list:
