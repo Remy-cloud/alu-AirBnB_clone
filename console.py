@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 """
-This module defines the command-line interpreter for the HBNB project.
-
-It allows the user to interact with the program in a command-line environment
-to create, retrieve, update, and delete instances of different models.
+Command Interpreter Module for HBNB Project
 """
 
 import cmd
@@ -16,7 +13,7 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 
-"""Dictionary to map model names to actual classes"""
+
 MODELS = {
     "BaseModel": BaseModel,
     "User": User,
@@ -30,13 +27,8 @@ MODELS = {
 
 def validate_args(args_list):
     """
-    Validates command arguments to ensure they meet requirements.
-
-    Args:
-        args_list (list): The list of arguments passed by the user.
-
-    Returns:
-        bool: True if valid, False otherwise.
+    Validates command arguments to ensure they meet 
+    requirements.
     """
     if not args_list:
         print("** class name missing **")
@@ -55,8 +47,6 @@ def validate_args(args_list):
 
 
 class HBNBCommand(cmd.Cmd):
-    """Command interpreter for HBNB project"""
-
     prompt = "(hbnb) "
 
     def emptyline(self):
@@ -68,12 +58,11 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_EOF(self, args):
-        """Handles EOF (Ctrl+D) to exit the program"""
-        print()
+        """Handles EOF to exit the program (Ctrl+D)."""
         return True
 
     def do_create(self, cls_name):
-        """Creates an instance of a model"""
+        """Creates an instance of a Model"""
         if not cls_name:
             print("** class name missing **")
             return
@@ -86,7 +75,10 @@ class HBNBCommand(cmd.Cmd):
         print(new_model.id)
 
     def do_show(self, args):
-        """Prints the string representation of an instance"""
+        """
+        Prints the string representation of an instance
+        Use: show <class name> <id>
+        """
         args_list = str.split(args)
 
         if not validate_args(args_list):
@@ -94,7 +86,7 @@ class HBNBCommand(cmd.Cmd):
 
         class_name = args_list[0]
         instance_id = args_list[1]
-        key = f"{class_name}.{instance_id}"
+        key = "{}.{}".format(class_name, instance_id)
         objects = storage.all()
         if key in objects:
             print(objects[key])
@@ -102,15 +94,15 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     def do_destroy(self, args):
-        """Deletes an instance"""
+        """Deletes an instance\nUse: destroy <class name> <id>"""
         args_list = str.split(args)
         if not validate_args(args_list):
             return
 
         class_name = args_list[0]
         instance_id = args_list[1]
-        key = f"{class_name}.{instance_id}"
         objects = storage.all()
+        key = "{}.{}".format(class_name, instance_id)
         if key in objects:
             del objects[key]
             storage.save()
@@ -118,13 +110,19 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     def do_all(self, cls):
-        """Prints all instances, or all instances of a specific class"""
+        """
+        Prints all string representation of all instances
+        based or not on the class name.
+        """
         objects = storage.all()
         obj_list = []
 
+        # If no class name is provided, print all instances
         if not cls:
             for obj in objects.values():
                 obj_list.append(str(obj))
+        # If class name is provided and valid, print only
+        # instances of that class
         elif cls in MODELS:
             for key, obj in objects.items():
                 if key.split(".")[0] == cls:
@@ -136,16 +134,23 @@ class HBNBCommand(cmd.Cmd):
         print(obj_list)
 
     def do_update(self, args):
-        """Updates an instance by adding or updating attributes"""
+        """
+        Updates an instance based on the class name and id
+        by adding or updating an attribute.
+        Usage: update <class name> <id> <attribute name> "<attribute value>"
+        """
         args_list = args.split()
 
+        # Validate class name and id
         if not validate_args(args_list):
             return
 
+        # Check if attribute name is provided
         if len(args_list) < 3:
             print("** attribute name missing **")
             return
 
+        # Check if attribute value is provided
         if len(args_list) < 4:
             print("** value missing **")
             return
@@ -153,29 +158,42 @@ class HBNBCommand(cmd.Cmd):
         class_name = args_list[0]
         instance_id = args_list[1]
         attr_name = args_list[2]
+
+        # Handle the case where attribute value might contain spaces
+        # Join the remaining args as the attribute value
         attr_value = args.split(" ", 3)[3]
 
+        # Remove quotes if present
         if attr_value.startswith('"') and attr_value.endswith('"'):
             attr_value = attr_value[1:-1]
 
+        # Skip update for protected attributes
         if attr_name in ["id", "created_at", "updated_at"]:
             return
 
-        key = f"{class_name}.{instance_id}"
+        # Find the instance and update it
+        key = "{}.{}".format(class_name, instance_id)
         objects = storage.all()
 
         if key in objects:
             instance = objects[key]
+
+            # Try to cast the value to the appropriate type
             try:
+                # First try to convert to int or float if possible
                 if attr_value.isdigit():
                     attr_value = int(attr_value)
                 else:
                     try:
                         attr_value = float(attr_value)
                     except ValueError:
+                        # Keep it as string if conversion fails
                         pass
+
+                # Update the instance attribute
                 setattr(instance, attr_name, attr_value)
                 instance.save()
+
             except Exception as e:
                 print(f"Error updating attribute: {e}")
         else:
